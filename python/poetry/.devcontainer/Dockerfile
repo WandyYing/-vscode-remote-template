@@ -7,6 +7,8 @@ FROM python:3.7.6-buster
 
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
+ARG YOUR_ENV
+ENV YOUR_ENV=${YOUR_ENV}
 
 # This Dockerfile adds a non-root user with sudo access. Use the "remoteUser"
 # property in devcontainer.json to use it. On Linux, the container user's GID/UIDs
@@ -123,16 +125,24 @@ ENV PATH=/root/.poetry/bin/:$PATH
 # poetry new ${your_project_name}
 # poetry install 
 # poetry add ${package}
-#
+# ==============================================
 # if has poetry project, execute below commad
 # create application directory
-# USER vscode
 # RUN sudo mkdir /app
 # WORKDIR /app
 # ONBUILD COPY pyproject.* .
 # # install dependencies:
 # ONBUILD RUN poetry install -n
+# ==============================================
+# # Option: Two(Recommend)
+# ARG YOUR_ENV
+# ENV YOUR_ENV=${YOUR_ENV}
+# COPY microws/poetry.lock microws/pyproject.toml /app/
+# # Project initialization:
+# RUN poetry config virtualenvs.create false \
+#   && poetry install $(test "$YOUR_ENV" == production && echo "--no-dev") --no-interaction --no-ansi
 
+# USER vscode
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=dialog
 
